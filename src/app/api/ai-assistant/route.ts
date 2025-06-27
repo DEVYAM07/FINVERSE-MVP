@@ -42,8 +42,12 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ insight });
-  } catch (err: any) {
-    console.error("AI Assistant Error:", err?.response?.data || err.message);
-    return NextResponse.json({ error: "Model call failed" }, { status: 500 });
+  } catch (error: unknown) {
+  console.error("API Error:", error);
+  if (error instanceof Error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+}
+
 }

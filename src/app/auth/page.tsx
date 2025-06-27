@@ -77,7 +77,7 @@ export default function AuthPage() {
               Use $10,000 virtual cash. Learn with AI guidance. No real risk.
             </p>
             <p className="text-neutral-500 text-sm italic mt-2">
-              "Experience is the best investment."
+              Experience is the best investment.
             </p>
           </div>
 

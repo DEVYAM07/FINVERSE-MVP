@@ -38,8 +38,14 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(stockData);
-  } catch (error: any) {
-    console.error("API Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+  } catch (error: unknown) {
+  console.error("Stock API Error:", error);
+  
+  if (error instanceof Error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+}
+
 }
