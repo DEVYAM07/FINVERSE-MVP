@@ -30,12 +30,13 @@ export async  function POST(request: NextRequest) {
 
         return NextResponse.json({ message: 'Signup successful' }, { status: 200 });
     } catch (error: unknown) {
-  console.error("Signup API Error:", error);
-  if (error instanceof Error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-}
+        if (typeof error === 'string') {
+            return NextResponse.json({ error: error }, { status: 500 });
+        }
+        console.error("Error during signup:", error);
+        return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+        
+    }
 
 
 }
