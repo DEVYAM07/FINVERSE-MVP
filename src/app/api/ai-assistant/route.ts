@@ -43,11 +43,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ insight });
   } catch (error: unknown) {
-  console.error("API Error:", error);
-  if (error instanceof Error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    if (typeof error === "string") {
+      return NextResponse.json({ error: error }, { status: 500 });
+    }
+    console.error("AI Assistant Error:", error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
 }
 
 }
