@@ -10,7 +10,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -22,11 +22,13 @@ export default function LoginForm() {
       }
 
       router.push('/dashboard');
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setError(err.response.data.message || 'Login failed');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message || 'Login failed');
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError(err.message || 'Login failed');
+        setError('Login failed');
       }
     } finally {
       setLoading(false);
@@ -77,5 +79,3 @@ export default function LoginForm() {
     </form>
   );
 }
-
-
