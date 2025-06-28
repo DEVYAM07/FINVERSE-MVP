@@ -1,11 +1,9 @@
-'use client'; 
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-
-
-export default function SignupForm( ) {
+export default function SignupForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +11,7 @@ export default function SignupForm( ) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -22,15 +20,17 @@ export default function SignupForm( ) {
       const res = await axios.post('/api/auth/signup', { name, email, password });
 
       if (res.status !== 200) {
-        throw new Error('Signup failed');
+        throw new Error(res.data?.error || 'Signup failed');
       }
 
       router.push('/dashboard');
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setError(err.response.data.error || 'Signup failed');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.error || err.message || 'Signup failed');
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError(err.message || 'Signup failed');
+        setError('Signup failed');
       }
     } finally {
       setLoading(false);
@@ -39,7 +39,7 @@ export default function SignupForm( ) {
 
   return (
     <form onSubmit={handleSignup} className="space-y-5 bg-white p-6 rounded-xl shadow-md">
-      {error && (<p className="text-[#FF385C] text-sm text-center">{error}</p>)}
+      {error && <p className="text-[#FF385C] text-sm text-center">{error}</p>}
 
       <div>
         <label className="text-[#222222] text-sm mb-1 block">Name</label>
@@ -48,9 +48,9 @@ export default function SignupForm( ) {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          disabled={loading} 
+          disabled={loading}
           className="w-full p-3 rounded-xl bg-white text-[#222222] border border-[#ebebeb] placeholder-[#717171] focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
-          placeholder="John Doe"
+          placeholder="John Doe"
         />
       </div>
 
@@ -89,7 +89,7 @@ export default function SignupForm( ) {
             : 'bg-[#FF385C] hover:bg-[#E11D48]'
         }`}
       >
-        {loading ? 'Processing...' : 'Sign Up'}
+        {loading ? 'Processing…' : 'Sign Up'}
       </button>
     </form>
   );
