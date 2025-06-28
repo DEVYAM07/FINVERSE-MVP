@@ -39,13 +39,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(stockData);
   } catch (error: unknown) {
-  console.error("Stock API Error:", error);
-  
-  if (error instanceof Error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+     if(typeof error === 'string') {
+      return NextResponse.json({ error: error }, { status: 500 });
+    }
+    console.log("Error fetching stock data:", error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
 }
 
 }
