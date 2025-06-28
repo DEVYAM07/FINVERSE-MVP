@@ -24,15 +24,22 @@ export default function StockCard({ symbol }: StockCardProps) {
     const fetchStock = async () => {
       setLoading(true);
       setError(null);
+
       try {
         const res = await fetch(`/api/stock?symbol=${symbol}`);
+
         if (!res.ok) {
           throw new Error("Failed to fetch stock data");
         }
-        const data = await res.json();
+
+        const data: StockData = await res.json();
         setStock(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to fetch stock data");
+        }
         setStock(null);
       } finally {
         setLoading(false);
@@ -56,7 +63,9 @@ export default function StockCard({ symbol }: StockCardProps) {
 
   return (
     <div className="bg-white border-2 border-[#ff385c] rounded-2xl shadow-lg p-6 max-w-md w-full text-[#222] transition hover:shadow-red-200">
-      <h2 className="text-3xl font-extrabold text-[#ff385c] mb-4 tracking-tight">{stock.symbol}</h2>
+      <h2 className="text-3xl font-extrabold text-[#ff385c] mb-4 tracking-tight">
+        {stock.symbol}
+      </h2>
 
       <div className="grid grid-cols-2 gap-4 text-sm text-[#333]">
         <div>
