@@ -26,14 +26,18 @@ export default function AIAssistant({ symbol }: AIAssistantProps) {
         if (data.error) {
           setError(data.error);
         } else {
-            if(typeof data.insight==='string'){
-                setInsight(data.insight);
-            }
-        } 
-        
-
-      } catch (err: any) {
-        setError(err?.response?.data?.error || err.message || "Something went wrong");
+          if (typeof data.insight === "string") {
+            setInsight(data.insight);
+          }
+        }
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.error || err.message);
+        } else if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong");
+        }
       } finally {
         setLoading(false);
       }
@@ -89,11 +93,11 @@ export default function AIAssistant({ symbol }: AIAssistantProps) {
   );
 }
 
-// Helper function to format the insight text with proper HTML
+// ✅ Type-safe formatter
 function formatInsight(text: string): string {
   let formatted = text
-    .replace(/\*\*(.*?)\*\*/g, '<span class="text-[#ff385c] font-semibold">$1</span>') // Bold -> red
-    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
+    .replace(/\*\*(.*?)\*\*/g, '<span class="text-[#ff385c] font-semibold">$1</span>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/- (.*?)(\n|$)/g, '<li class="text-red-600">$1</li>');
 
   formatted = formatted.replace(/\n\n/g, '</p><p class="mb-2">');
@@ -102,7 +106,6 @@ function formatInsight(text: string): string {
     formatted = '<p class="mb-2">' + formatted + '</p>';
   }
 
-  // Wrap list items in ul only once (avoid nested multiple ul)
   if (formatted.includes('<li')) {
     formatted = formatted.replace(/(<li[^>]*>.*?<\/li>)/, '<ul class="list-disc pl-5 mb-2">$1</ul>');
   }
